@@ -1,5 +1,18 @@
 # County Store Application Changelog
 
+## Version 2.0.7 - (2025-02-28)
+
+### **Admin Updates**
+
+- Admin panel for Edit Users was updated and passed all unit tests.
+- Admin panel for Edit Department was updated and passed all unit tests.
+- Admin panel for Receiving Items or Whole Orders was updated and passed all unit tests.
+
+### **Bug Fixes 🐛**
+
+- Fixed a bug in the order confirmation email causing certain items not to be listed in the email.
+- Fixed a big in the edit order (in cart and checkout) where the originally selected logo was not correctly marked as 'selected' when the `<select>` `<option>` was rendered which caused the logo to be updated to the first one one the list each time. When a new logo is selected is correctly updates the cart as well.
+
 ## Version 2.0.6 - (2025-02-03)
 
 ### **Bug Fixes 🐛**

@@ -22,82 +22,82 @@ include "./components/viewHead.php"
 ?>
 
 <script>
-function getCartItem(id) {
-    const cart = <?php echo $cart->serializeCart(); ?>;
-    const cartItem = cart[id];
-    if (cartItem) {
-        return cartItem;
-    } else {
-        console.error("Cart can not be retrieved")
+    function getCartItem(id) {
+        const cart = <?php echo $cart->serializeCart(); ?>;
+        const cartItem = cart[id];
+        if (cartItem) {
+            return cartItem;
+        } else {
+            console.error("Cart can not be retrieved")
+        }
     }
-}
 
-function updateSizeAndPriceData(event) {
-    var selectElement = event.target;
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    function updateSizeAndPriceData(event) {
+        var selectElement = event.target;
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
 
-    var hiddenPriceIdInput = document.getElementById('price_id')
-    hiddenPriceIdInput.value = selectedOption.getAttribute('data-priceid');
+        var hiddenPriceIdInput = document.getElementById('price_id')
+        hiddenPriceIdInput.value = selectedOption.getAttribute('data-priceid');
 
-    var hiddenPriceInput = document.getElementById('price')
-    hiddenPriceInput.value = selectedOption.getAttribute('data-price');
+        var hiddenPriceInput = document.getElementById('price')
+        hiddenPriceInput.value = selectedOption.getAttribute('data-price');
 
-    var hiddenSizeNameInput = document.getElementById('size_name')
-    hiddenSizeNameInput.value = selectedOption.getAttribute('data-sizename');
+        var hiddenSizeNameInput = document.getElementById('size_name')
+        hiddenSizeNameInput.value = selectedOption.getAttribute('data-sizename');
 
 
-}
-
-function updateColorData(event) {
-    var selectElement = event.target;
-    var selectedOption = selectElement.options[selectElement.selectedIndex];
-
-    var hiddenColorIdInput = document.getElementById('color_id')
-    hiddenColorIdInput.value = selectedOption.getAttribute('data-colorid');
-
-    var hiddenColorNameInput = document.getElementById('color_name')
-    hiddenColorNameInput.value = selectedOption.getAttribute('data-colorname');
-}
-
-function updateLogo(val) {
-    var hiddenLogoInput = document.getElementById('logo')
-    hiddenLogoInput.value = val;
-}
-
-function updateDeptPatch(val) {
-    var hiddenDeptInput = document.getElementById('deptPatchPlace')
-    var hiddenLogoFeeInput = document.getElementById('logoFee')
-    hiddenDeptInput.value = val;
-    if (val == 'Left Sleeve') {
-        hiddenLogoFeeInput.value = parseFloat(10.00)
-    } else {
-        hiddenLogoFeeInput.value = parseFloat(5.00)
     }
-}
 
-function formatColorValueForUrl(str) {
-    var noSpaces = str.replace(/[\s/]/g, '');
-    var lowercaseString = noSpaces.toLowerCase();
-    return lowercaseString;
-}
+    function updateColorData(event) {
+        var selectElement = event.target;
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
 
-function getCartItemOptions(id, cartItem) {
-    fetch(`./fetchProductDetails.php?id=${id}`)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error status: ${response.status}`);
-            }
-            return response.json();
+        var hiddenColorIdInput = document.getElementById('color_id')
+        hiddenColorIdInput.value = selectedOption.getAttribute('data-colorid');
 
-        })
-        .then((data) => {
-            console.log('product-data-for-cart-item');
-            console.log(data);
-            //return data;
+        var hiddenColorNameInput = document.getElementById('color_name')
+        hiddenColorNameInput.value = selectedOption.getAttribute('data-colorname');
+    }
+
+    function updateLogo(val) {
+        var hiddenLogoInput = document.getElementById('logo')
+        hiddenLogoInput.value = val;
+    }
+
+    function updateDeptPatch(val) {
+        var hiddenDeptInput = document.getElementById('deptPatchPlace')
+        var hiddenLogoFeeInput = document.getElementById('logoFee')
+        hiddenDeptInput.value = val;
+        if (val == 'Left Sleeve') {
+            hiddenLogoFeeInput.value = parseFloat(10.00)
+        } else {
+            hiddenLogoFeeInput.value = parseFloat(5.00)
+        }
+    }
+
+    function formatColorValueForUrl(str) {
+        var noSpaces = str.replace(/[\s/]/g, '');
+        var lowercaseString = noSpaces.toLowerCase();
+        return lowercaseString;
+    }
+
+    function getCartItemOptions(id, cartItem) {
+        fetch(`./fetchProductDetails.php?id=${id}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error status: ${response.status}`);
+                }
+                return response.json();
+
+            })
+            .then((data) => {
+                console.log('product-data-for-cart-item');
+                console.log(data);
+                //return data;
 
 
-            var html = '';
-            html += `
+                var html = '';
+                html += `
                     <form action='cartAction.php' method='post' id='editCartItem'>
                     <div class="editCartItemDiv">
                         <input type='hidden' name='id' value='${cartItem.rowid}' />
@@ -116,48 +116,51 @@ function getCartItemOptions(id, cartItem) {
                         <label for='editSize'>Edit Size</label>
                         <select name='size_id' id='editSize' onchange='updateSizeAndPriceData(event)'>
                             `;
-            for (var i = 0; i < data['price_data'].length; i++) {
-                var isSelected = cartItem.size_id == data['price_data'][i].size_id ? 'selected' : '';
+                for (var i = 0; i < data['price_data'].length; i++) {
+                    var isSelected = cartItem.size_id == data['price_data'][i].size_id ? 'selected' : '';
 
-                html += `
+                    html += `
                                 <option value="${data['price_data'][i].size_id}" ${isSelected === 'selected'? 'selected' : ''} data-priceid=${data['price_data'][i].price_id} data-sizename="${data['price_data'][i].size_name}" data-price=${data['price_data'][i].price}>
                                     ${data['price_data'][i].size_name}
                                 </option>
                             `;
-            }
-            html += `
+                }
+                html += `
                         </select>
                         </fieldset>
                         <fieldset>
                         <label for='editSize'>Edit color</label>
                         <select name='color_id' id='editColor' onchange='updateColorData(event)'>
                         `;
-            for (var j = 0; j < data['color_data'].length; j++) {
-                var isSelected = cartItem.color_id == data['color_data'][j].color ? 'selected' : '';
+                for (var j = 0; j < data['color_data'].length; j++) {
+                    var isSelected = cartItem.color_id == data['color_data'][j].color ? 'selected' : '';
 
-                html += `
+                    html += `
                                 <option value="${data['color_data'][j].color_id}" ${isSelected === 'selected'? 'selected' : ''} data-colorid=${data['color_data'][j].color_id} data-colorname="${data['color_data'][j].color}" data-colorid="${data['color_data'][j].color_id}">
                                     ${data['color_data'][j].color}
                                 </option>
                             `;
-            }
-            html += `
+                }
+                html += `
                         </select>
                         </fieldset>
                         <fieldset>
                         <label for='editLogo'>Edit Logo</label>
                         <select name='logo' id='editLogo' onchange='updateLogo(this.value)'>
                     `;
-            for (var k = 0; k < data['logo_data'].length; k++) {
-                var isSelected = cartItem.logo.replace(/_NO\.png$/, '.png') == data['logo_data'][k].image ?
-                    'selected' : '';
-                html += `
+                for (var k = 0; k < data['logo_data'].length; k++) {
+                    // var isSelected = cartItem.logo.replace(/_NO\.png$/, '.png') == data['logo_data'][k].image ?
+                    //     'selected' : '';
+                    var isSelected = cartItem.logo.replace(/_NO\.png$/, '.png').toLowerCase() === data['logo_data'][k]
+                        .image.toLowerCase() ? 'selected' : '';
+
+                    html += `
                             <option value="${data['logo_data'][k].image}" ${isSelected === 'selected'? 'selected' : ''}>
                                 ${data['logo_data'][k].logo_name}
                             </option>
                             `;
-            }
-            html += `
+                }
+                html += `
                         </select>
                         </fieldset>
                         <fieldset>
@@ -182,108 +185,108 @@ function getCartItemOptions(id, cartItem) {
                         </div>
                         </form>
                         `;
-            document.getElementById('popover-edit-form-holder').innerHTML = html;
+                document.getElementById('popover-edit-form-holder').innerHTML = html;
 
 
 
-        })
-        .catch((error) => {
-            console.error('Error fetching product details:', error);
-        });
-}
-
-
-function updateCartItem(obj, id) {
-    // Construct the URL with parameters
-    const url = new URL("cartAction.php");
-    url.searchParams.append("action", "updateCartItem");
-    url.searchParams.append("id", id);
-    url.searchParams.append("qty", obj.value);
-
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text();
-        })
-        .then(data => {
-            if (data === 'ok') {
-                // If data is ok, reload the page
-                location.reload();
-            } else {
-                // Else alert user that the update failed
-                alert('Cart update failed, please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            alert('An error occurred, please try again later.');
-        });
-}
-
-function updateCartItemComment(obj, id) {
-
-    const url = new URL("cartAction.php");
-    url.searchParams.append("action", "updateCartItemComment");
-    url.searchParams.append("id", id);
-    url.searchParams.append("comment", obj.value);
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.text(); // Parse the response body as text
-        })
-        .then(data => {
-            if (data === 'ok') {
-                // If data is ok, reload the page or perform another action
-                location.reload(); // Comment this line we decide we don't want it. I hate reloads but...
-            } else {
-                alert('Comment update failed, please try again');
-            }
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-            alert('An error occurred, please try again later.');
-        });
-}
-
-function convertObjectToArray(obj) {
-    let resultArray = [];
-    for (let key in obj) {
-        if (typeof obj[key] === "object") {
-            resultArray.push([key, convertObjectToArray(obj[key])]);
-        } else {
-            resultArray.push([key, obj[key]]);
-        }
+            })
+            .catch((error) => {
+                console.error('Error fetching product details:', error);
+            });
     }
-    return resultArray;
-}
 
-function makeDollar(str) {
-    let amount = parseFloat(str);
-    return `$${amount.toFixed(2)}`;
-}
 
-function renderEdit(cartId) {
-    console.log('CartId is ', cartId)
-    const cartItem = getCartItem(cartId)
-    console.log(cartItem);
-    const itemOptions = getCartItemOptions(cartItem.id, cartItem)
-}
+    function updateCartItem(obj, id) {
+        // Construct the URL with parameters
+        const url = new URL("cartAction.php");
+        url.searchParams.append("action", "updateCartItem");
+        url.searchParams.append("id", id);
+        url.searchParams.append("qty", obj.value);
 
-function renderComment(cartId) {
-    console.log('Comment id is :', cartId)
-    var target = document.getElementById('add-comment-item-popover');
-    var html = '';
-    // <input type="hidden" name="action" value="updateCartItemComment">
-    // <label for="comment"></label>
-    html +=
-        // <form class="comment-form" onsubmit=updateCartItemComment(this, ${cartId})>
-        `
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(data => {
+                if (data === 'ok') {
+                    // If data is ok, reload the page
+                    location.reload();
+                } else {
+                    // Else alert user that the update failed
+                    alert('Cart update failed, please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+                alert('An error occurred, please try again later.');
+            });
+    }
+
+    function updateCartItemComment(obj, id) {
+
+        const url = new URL("cartAction.php");
+        url.searchParams.append("action", "updateCartItemComment");
+        url.searchParams.append("id", id);
+        url.searchParams.append("comment", obj.value);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text(); // Parse the response body as text
+            })
+            .then(data => {
+                if (data === 'ok') {
+                    // If data is ok, reload the page or perform another action
+                    location.reload(); // Comment this line we decide we don't want it. I hate reloads but...
+                } else {
+                    alert('Comment update failed, please try again');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+                alert('An error occurred, please try again later.');
+            });
+    }
+
+    function convertObjectToArray(obj) {
+        let resultArray = [];
+        for (let key in obj) {
+            if (typeof obj[key] === "object") {
+                resultArray.push([key, convertObjectToArray(obj[key])]);
+            } else {
+                resultArray.push([key, obj[key]]);
+            }
+        }
+        return resultArray;
+    }
+
+    function makeDollar(str) {
+        let amount = parseFloat(str);
+        return `$${amount.toFixed(2)}`;
+    }
+
+    function renderEdit(cartId) {
+        console.log('CartId is ', cartId)
+        const cartItem = getCartItem(cartId)
+        console.log(cartItem);
+        const itemOptions = getCartItemOptions(cartItem.id, cartItem)
+    }
+
+    function renderComment(cartId) {
+        console.log('Comment id is :', cartId)
+        var target = document.getElementById('add-comment-item-popover');
+        var html = '';
+        // <input type="hidden" name="action" value="updateCartItemComment">
+        // <label for="comment"></label>
+        html +=
+            // <form class="comment-form" onsubmit=updateCartItemComment(this, ${cartId})>
+            `
             <form class="comment-form" action="cartAction.php" method="post">
             <input type="hidden" name="action" value="updateCartItemComment">
             <input type="hidden" name="id" value="${cartId}">
@@ -291,49 +294,49 @@ function renderComment(cartId) {
             <br>
             <button class="button comment-form-btn" type="submit">Submit</button>
             </form>`;
-    target.innerHTML = html;
-}
-
-function removeItem(cartId) {
-    if (confirm('Are you sure you want to delete this item?')) {
-        fetch('cartAction.php?action=removeCartItem&id=' + cartId)
-            .then(response => {
-                if (response.ok) {
-                    localStorage.removeItem('store-cart');
-                    window.location.reload();
-                } else {
-                    alert("Remove item failed!!!! 😲 ");
-                }
-            })
-            .catch(error => {
-                console.error('Error removing item:', error);
-                alert('An error occurred while removing the item')
-            })
+        target.innerHTML = html;
     }
-}
 
-
-function renderCheckout(cart) {
-    // console.log('cart');
-    // console.log(cart);
-    cartArray = convertObjectToArray(cart);
-    // console.log('cartArray.length')
-    // console.log(cartArray.length)
-    if (cartArray.length <= 3) {
-        var html = '<img src="cart_empty.jpg" alt="Cart is empty" class="empty-cart-img" />';
-        document.getElementById('items').innerHTML += html;
-        return
+    function removeItem(cartId) {
+        if (confirm('Are you sure you want to delete this item?')) {
+            fetch('cartAction.php?action=removeCartItem&id=' + cartId)
+                .then(response => {
+                    if (response.ok) {
+                        localStorage.removeItem('store-cart');
+                        window.location.reload();
+                    } else {
+                        alert("Remove item failed!!!! 😲 ");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error removing item:', error);
+                    alert('An error occurred while removing the item')
+                })
+        }
     }
-    // console.log(cartArray)
-    // let accumulatedHtml = '';
-    // let selectQuantities = {};
-    var html = '';
-    for (var i = 3; i < cartArray.length; i++) {
-        const itemEntry = cartArray[i][1];
-        console.log("Item Entry # ", i)
-        console.log(itemEntry)
+
+
+    function renderCheckout(cart) {
+        // console.log('cart');
+        // console.log(cart);
+        cartArray = convertObjectToArray(cart);
+        // console.log('cartArray.length')
+        // console.log(cartArray.length)
+        if (cartArray.length <= 3) {
+            var html = '<img src="cart_empty.jpg" alt="Cart is empty" class="empty-cart-img" />';
+            document.getElementById('items').innerHTML += html;
+            return
+        }
+        // console.log(cartArray)
+        // let accumulatedHtml = '';
+        // let selectQuantities = {};
         var html = '';
-        html += `
+        for (var i = 3; i < cartArray.length; i++) {
+            const itemEntry = cartArray[i][1];
+            console.log("Item Entry # ", i)
+            console.log(itemEntry)
+            var html = '';
+            html += `
                 <div>
                     <div class="active-items">
                         <div class="active-item" data-cartId=${itemEntry[4][1]}>
@@ -373,23 +376,21 @@ function renderCheckout(cart) {
                                             </div>
                                             
                                             `
-        var chtml = `
+            var chtml = `
                     ${itemEntry[14][1] ? `<p>${itemEntry[6][1]}</p> <span> ${itemEntry[14][1]}</span>` : `<span class='no-comment'>no comment</span>`}
                 `;
-        // <button class='button btn comment' value="${itemEntry[4][1]}" onclick="renderComment(this.value)" popovertarget="add-comment" popovertargetaction="show'>Add Comment</button>
-        // <button class='remove' onclick="return confirm('Are you sure to remove cart item?')?window.location.href='cartAction.php?action=removeCartItem&id="${itemEntry[4][1]}":false;" title="Remove Item">Delete</button> 
 
-        document.getElementById('items').innerHTML += html;
-        document.getElementById('comments-stream').innerHTML += chtml;
+            document.getElementById('items').innerHTML += html;
+            document.getElementById('comments-stream').innerHTML += chtml;
+        }
     }
-}
 
-function logCart() {
-    let cartItems = JSON.parse(localStorage.getItem('store-cart')) || {};
-    console.log('cartItems');
-    console.log(cartItems);
-}
-// logCart();
+    function logCart() {
+        let cartItems = JSON.parse(localStorage.getItem('store-cart')) || {};
+        console.log('cartItems');
+        console.log(cartItems);
+    }
+    // logCart();
 </script>
 </head>
 
@@ -433,11 +434,11 @@ function logCart() {
 
 
             <?php if ($cart->total_items() > 0) { ?>
-            <div class="button-holder">
-                <a href="checkout.php" class="btn btn-success">
-                    Checkout
-                </a>
-            </div>
+                <div class="button-holder">
+                    <a href="checkout.php" class="btn btn-success">
+                        Checkout
+                    </a>
+                </div>
             <?php } ?>
             <div class="comments-stream" id="comments-stream">Comment:</div>
         </div>
@@ -451,12 +452,12 @@ function logCart() {
             </div>
             <div>
                 <?php if ($cart->total_items() > 0) { ?>
-                <a href="checkout.php"><button class="btn btn-success" type="button"> Proceed to Checkout </button></a>
+                    <a href="checkout.php"><button class="btn btn-success" type="button"> Proceed to Checkout </button></a>
                 <?php } ?>
             </div>
         </div>
     </div>
-    <div id="edit-cart-item" popover=manual>
+    <div id="edit-cart-item" popover>
         <div id="cart-item-edit-details" class="cart-item-edit-details">
             <div class="popover-btn-holder">
                 <button popovertarget="edit-cart-item" popovertargetaction="hide" class="btn-close ms-2 mb-1"
@@ -491,11 +492,11 @@ function logCart() {
             <div id="add-comment-item-popover"></div>
         </div>
     </div>
-    <!-- </div> -->
+
 
     <?php include "footer.php" ?>
     <script>
-    renderCheckout(<?php echo $cart->serializeCart() ?>);
+        renderCheckout(<?php echo $cart->serializeCart() ?>);
     </script>
 
 </body>
@@ -503,433 +504,323 @@ function logCart() {
 
 </html>
 <style>
-/* a {
-    text-decoration: none;
-} */
-
-/* .tiny-text {
-        font-size: small;
-    } */
-
-/* .fake_CSS_for_testing {
-        font-size: 1000px;
-    } */
-
-/* .alert-warning {
-    margin-top: 40px;
-    text-align: center;
-    font-weight: 500;
-    font-size: larger;
-    color: black;
-    width: 50%;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 5px;
-
-} */
-
-#cart-logo-img {
-    width: 50px;
-    transition: all .2s ease-in-out;
-}
-
-
-/* .dept-patch-info {
-        margin-top: 10px;
-    } */
-
-/* pre {
-    background-color: dodgerblue;
-    color: white;
-
-} */
-
-.container {
-    max-width: unset !important;
-    width: auto;
-    display: grid;
-    grid-template-columns: 6fr 2fr;
-    box-shadow: 0 0 25px -5px #000000;
-    margin: 2%;
-    padding: 2%;
-    border-radius: 5px;
-}
-
-
-
-
-.cart-display {
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-}
-
-/* .little-prod-img {
-        padding: 5px;
-    } */
-
-
-/* button {
-    border-radius: 5px;
-}
-
-.button {
-    margin: 5px;
-}
-
-.button {
-    display: inline-block;
-    padding: 5px 10px;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    text-decoration: none;
-    border: 2px solid #000000;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: #000000;
-    transition: background-color 0.3s ease;
-}
-
-.button:hover {
-    background-color: #4CAF50 !important;
-    color: #000000 !important;
-    font-weight: bold !important;
-} */
-
-
-/* .remove {
-        background-color: darkred;
-        color: #FFFFFF;
+    #cart-logo-img {
+        width: 50px;
+        transition: all .2s ease-in-out;
     }
 
-    .comment {
-        background-color: #42A1FF;
-        color: #000000
-    } */
-
-/* .change {
-        background-color: #005c00;
-        color: #FFFFFF;
-    } */
-
-/* .gregSucks {
-        background-color: #FFFF00;
-        color: #000000;
-    }
-
-    .sharkWreck {
-        background-color: #800080;
-        color: #ffffff;
-    } */
-
-.items {
-    /* background-color: #FFF; */
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px;
-    color: #000;
-
-}
-
-.active-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 100%);
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.active-item {
-    max-width: none;
-    /* border-bottom: 1px dotted aliceblue; */
-    padding-bottom: 12px;
-    background-color: #FFF;
-    box-shadow: 0 0 25px -5px #000000;
-    border-radius: 5px;
-
-
-}
-
-.item-content {
-    position: relative;
-    margin-top: 12px;
-}
-
-.item-content-inner {
-    width: 100%;
-    display: flex !important;
-    flex-direction: row;
-    table-layout: fixed;
-    zoom: 1;
-    border-collapse: collapse;
-}
-
-.item-content-inner-inner {
-    width: 100%;
-    display: flex !important;
-    flex-direction: row;
-    table-layout: fixed;
-    zoom: 1;
-    border-collapse: collapse;
-}
-
-.image-wrapper {
-    margin-right: 12px;
-    margin-inline-end: 12px;
-    flex-shrink: 0;
-    margin-bottom: 4px;
-}
-
-.product-image {
-    vertical-align: top;
-    max-width: 100%;
-    border: 0;
-    height: 180px;
-
-}
-
-.item-content {
-    min-width: 0;
-    flex: auto;
-    margin-inline-end: 0;
-    margin-right: 12px;
-}
-
-.item-content-footer {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 12px;
-}
-
-
-.unordered-list {
-    display: grid;
-    column-gap: 12px;
-    grid-template-areas: "head price""tail price";
-    grid-template-rows: auto 1fr;
-    grid-template-columns: 1fr minmax(13ch, 20%);
-    list-style: none;
-    word-wrap: break-word;
-    margin: 0;
-    width: 100%
-}
-
-.product-title {
-    grid-area: head;
-    line-height: 1.3rem;
-    max-height: 2.6em;
-    font-size: x-large;
-    word-break: normal;
-    padding: 3px;
-}
-
-.price-block {
-    grid-area: price;
-    display: flex;
-    flex-flow: column;
-    align-items: end;
-    text-align: end;
-    line-height: 1.3rem;
-    max-height: 2.6em;
-    font-size: x-large;
-    word-break: normal;
-    padding: 3px;
-}
-
-.content-tail {
-    grid-area: tail;
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    margin-top: 5px;
-    margin-bottom: 5px;
-}
-
-.logo-pict {
-    height: 100px;
-    margin-left: 50px;
-    padding-top: 12px;
-    margin-right: auto;
-
-}
-
-.logo-holder {
-    display: flex;
-
-    grid-row-start: 1;
-    grid-row-end: 4;
-}
-
-
-
-/* .bottom-buttons-holder { 
-  display: flex;
-    justify-content: space-evenly;
- 
- 
-} */
-
-.checkout {
-    background-color: #FFFFFF;
-    height: fit-content;
-
-    border-radius: 5px;
-    /* padding: 12px; */
-
-    color: #000;
-    /* margin-left: 10px; */
-    /* padding-right: 20px; */
-    text-align: end;
-    display: flex;
-    flex-direction: column;
-    padding: 2%;
-    margin: 2%;
-    box-shadow: 0 0 25px -5px #000000;
-}
-
-
-.amount-column {
-    min-width: 25px;
-    text-align: right;
-}
-
-.checkout-summary-table {
-    width: 100%;
-}
-
-.checkout p {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-    word-break: normal;
-}
-
-.checkout p span {
-    margin-right: 5px;
-}
-
-#add-comment,
-#edit-cart-item {
-    width: 45%;
-    height: 37%;
-
-    background-color: #ffffff;
-    color: hsl(224, 10%, 23%);
-    border: 7px solid #BF1722;
-
-    mark {
+    .container {
+        max-width: unset !important;
+        width: auto;
+        display: grid;
+        grid-template-columns: 6fr 2fr;
+        box-shadow: 0 0 25px -5px #000000;
+        margin: 2%;
+        padding: 2%;
         border-radius: 5px;
-        padding: 2px;
-        font-weight: bold;
     }
-}
 
-.cart-item-edit-details {
-    background-color: #ffffff50;
-    padding: 20px
-}
-
-.popover-btn-holder {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-}
-
-.popover-close-btn {
-    background-color: #000000;
-    padding: 5px;
-    margin-bottom: 5px;
-}
-
-.popover-desc-text-holder {
-    margin: 5px;
-    padding: 5px;
-
-    p {
-        font-size: larger;
+    .cart-display {
+        display: grid;
+        grid-template-columns: 5fr 1fr;
     }
-}
 
+    .items {
 
-.editCartItemDiv {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
+        border-radius: 5px;
+        padding: 10px;
+        margin: 10px;
+        color: #000;
+    }
 
-::backdrop {
-    backdrop-filter: blur(3px);
-}
+    .active-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 100%);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
 
-.edit-cart-item-submit-btn-holder {
-    display: flex;
-    padding: 5px;
-    justify-content: flex-end;
-}
+    .active-item {
+        max-width: none;
+        padding-bottom: 12px;
+        background-color: #FFF;
+        box-shadow: 0 0 25px -5px #000000;
+        border-radius: 5px;
+    }
 
-.cart-item-submit-btn {
-    padding: 5px;
-    background-color: limegreen;
-    color: #000
-}
+    .item-content {
+        position: relative;
+        margin-top: 12px;
+    }
 
-
-.empty-cart-img {
-    max-height: 50dvh;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.comments-stream {
-    margin-top: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #A09D9C;
-    color: #000000;
-    padding: 5px;
-
-    p {
-        text-align: left;
-        padding: 0;
-        margin: 0;
-        margin-bottom: -10px;
+    .item-content-inner {
         width: 100%;
-        text-transform: uppercase;
-        font-size: medium;
+        display: flex !important;
+        flex-direction: row;
+        table-layout: fixed;
+        zoom: 1;
+        border-collapse: collapse;
     }
 
-    span {
+    .item-content-inner-inner {
+        width: 100%;
+        display: flex !important;
+        flex-direction: row;
+        table-layout: fixed;
+        zoom: 1;
+        border-collapse: collapse;
+    }
+
+    .image-wrapper {
+        margin-right: 12px;
+        margin-inline-end: 12px;
+        flex-shrink: 0;
+        margin-bottom: 4px;
+    }
+
+    .product-image {
+        vertical-align: top;
+        max-width: 100%;
+        border: 0;
+        height: 180px;
+
+    }
+
+    .item-content {
+        min-width: 0;
+        flex: auto;
+        margin-inline-end: 0;
+        margin-right: 12px;
+    }
+
+    .item-content-footer {
         display: flex;
-        justify-content: flex-start;
-        font-size: medium;
-        font-weight: bold;
-        font-family: monospace;
-        text-align: left;
-        padding: 5px;
-        border-bottom: 1px solid #808080;
+        justify-content: space-between;
+        padding-top: 12px;
+    }
+
+
+    .unordered-list {
+        display: grid;
+        column-gap: 12px;
+        grid-template-areas: "head price" "tail price";
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 1fr minmax(13ch, 20%);
+        list-style: none;
+        word-wrap: break-word;
+        margin: 0;
+        width: 100%
+    }
+
+    .product-title {
+        grid-area: head;
+        line-height: 1.3rem;
+        max-height: 2.6em;
+        font-size: x-large;
+        word-break: normal;
+        padding: 3px;
+    }
+
+    .price-block {
+        grid-area: price;
+        display: flex;
+        flex-flow: column;
+        align-items: end;
+        text-align: end;
+        line-height: 1.3rem;
+        max-height: 2.6em;
+        font-size: x-large;
+        word-break: normal;
+        padding: 3px;
+    }
+
+    .content-tail {
+        grid-area: tail;
+        display: grid;
+        grid-template-columns: 1fr 3fr;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .logo-pict {
+        height: 100px;
+        margin-left: 50px;
+        padding-top: 12px;
+        margin-right: auto;
+
+    }
+
+    .logo-holder {
+        display: flex;
+
+        grid-row-start: 1;
+        grid-row-end: 4;
+    }
+
+
+    .checkout {
+        background-color: #FFFFFF;
+        height: fit-content;
+
+        border-radius: 5px;
+        /* padding: 12px; */
+
+        color: #000;
+        /* margin-left: 10px; */
+        /* padding-right: 20px; */
+        text-align: end;
+        display: flex;
+        flex-direction: column;
+        padding: 2%;
+        margin: 2%;
+        box-shadow: 0 0 25px -5px #000000;
+    }
+
+
+    .amount-column {
+        min-width: 25px;
+        text-align: right;
+    }
+
+    .checkout-summary-table {
         width: 100%;
     }
 
-    span:before {
-        content: '👉🏼 '
+    .checkout p {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+        word-break: normal;
     }
-}
 
-.no-comment {
-    visibility: hidden;
-}
+    .checkout p span {
+        margin-right: 5px;
+    }
 
-.button-holder {
-    margin-top: 5px;
-    display: flex;
+    #add-comment,
+    #edit-cart-item {
+        width: 45%;
+        height: 37%;
 
-    justify-content: space-around;
+        background-color: #ffffff;
+        color: hsl(224, 10%, 23%);
+        border: 7px solid #BF1722;
 
-    margin-left: 5em;
-    margin-right: 5em;
-}
+        mark {
+            border-radius: 5px;
+            padding: 2px;
+            font-weight: bold;
+        }
+    }
+
+    .cart-item-edit-details {
+        background-color: #ffffff50;
+        padding: 20px
+    }
+
+    .popover-btn-holder {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .popover-close-btn {
+        background-color: #000000;
+        padding: 5px;
+        margin-bottom: 5px;
+    }
+
+    .popover-desc-text-holder {
+        margin: 5px;
+        padding: 5px;
+
+        p {
+            font-size: larger;
+        }
+    }
 
 
-@view-transition {
-    navigation: auto;
-}
+    .editCartItemDiv {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    ::backdrop {
+        backdrop-filter: blur(3px);
+    }
+
+    .edit-cart-item-submit-btn-holder {
+        display: flex;
+        padding: 5px;
+        justify-content: flex-end;
+    }
+
+    .cart-item-submit-btn {
+        padding: 5px;
+        background-color: limegreen;
+        color: #000
+    }
+
+
+    .empty-cart-img {
+        max-height: 50dvh;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .comments-stream {
+        margin-top: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #A09D9C;
+        color: #000000;
+        padding: 5px;
+
+        p {
+            text-align: left;
+            padding: 0;
+            margin: 0;
+            margin-bottom: -10px;
+            width: 100%;
+            text-transform: uppercase;
+            font-size: medium;
+        }
+
+        span {
+            display: flex;
+            justify-content: flex-start;
+            font-size: medium;
+            font-weight: bold;
+            font-family: monospace;
+            text-align: left;
+            padding: 5px;
+            border-bottom: 1px solid #808080;
+            width: 100%;
+        }
+
+        span:before {
+            content: '👉🏼 '
+        }
+    }
+
+    .no-comment {
+        visibility: hidden;
+    }
+
+    .button-holder {
+        margin-top: 5px;
+        display: flex;
+
+        justify-content: space-around;
+
+        margin-left: 5em;
+        margin-right: 5em;
+    }
+
+
+    @view-transition {
+        navigation: auto;
+    }
 </style>

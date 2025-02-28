@@ -62,6 +62,7 @@ if ($eRes->num_rows > 0) {
         $emps[] = $eRow;
     }
 }
+include "components/commonHead.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,9 +71,7 @@ if ($eRes->num_rows > 0) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.5.5/css/simple-line-icons.min.css">
-    <link rel="stylesheet" href="prod-admin-style.css">
+
     <link rel="icon" href="./favicons/favicon.ico">
 
     <title>Dept Admin Page</title>
@@ -185,222 +184,199 @@ if ($eRes->num_rows > 0) {
         function showLoading() {
             document.getElementById('loading').classList.remove('hidden');
         }
+
+        var data = <?php echo json_encode($deps); ?>
+
+        function renderTable(data) {
+            var html = `
+        <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Dep Number</th>
+                        <th>Dep Name</th>
+                        <th>Dep Head</th>
+                        <th>DH Change</th>
+                        <th>Dep Asst </th>
+                        <th>DA Change</th>
+                        <th>Dep Asset Mgr</th>
+                        <th>AM Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    `
+            for (var i = 0; i < data.length; i++) {
+
+                html += `<tr>
+                 <td>${data[i].dep_num}</td>
+                 <td>${data[i].dep_name}</td>
+                 <td>${data[i].dep_head_empName}</td>
+                
+                 <td>
+                    <button 
+                        id='dh_data_button' 
+                        value='${data[i].dep_num}'
+                        onclick='showDHChange(this.value)'>
+                            <i class=icon-arrow-left-circle m-auto text-primary'></i>
+                                Change
+                            </button>
+                 </td>
+                <td>${data[i].dep_assist_empName}</td>
+                
+                <td>
+                    <button 
+                        value='${data[i].dep_num}
+                        onclick='showDAChange(this.value)'>
+                            <i class=icon-arrow-left-circle m-auto text-primary'></i>
+                                Change
+                            </button>
+                 </td>
+                <td>${data[i].dep_asset_mgr_empName}</td>
+                <td>
+                    <button 
+                        value='${data[i].dep_num}'
+                        onclick='showAMChange(this.value)'>
+                            <i class=icon-arrow-left-circle m-auto text-primary'></i>
+                                Change
+                            </button>
+                 </td>
+                 </tr>
+                `
+            }
+            html += `
+                </tbody>
+            </table>
+        `;
+            document.getElementById('main').innerHTML = html;
+        }
+        renderTable(data);
     </script>
 
 
 
 </head>
+<div class=" div2">
+    <div id="main">
 
-<body class="p-3 m-0 border-0 bd-example m-0 border-0">
-    <div class="parent">
-        <div class="div1">
-            <?php include "hidenav.php" ?>
-        </div>
-        <!-- <div class="div2">
+        <div class="dh_confirm hidden" id="dh_change">
+            <h1 class="dh_h1">Change Assignment</h1>
 
-        </div> -->
+            <label for="empList">Select the employee you wish to (re)assign to <mark>Department
+                    Head</mark></label>
+            <select onchange='setDHValue(this.value)'>
+                <?php
+                foreach ($emps as $emp) {
+                    echo "<option value='" . $emp['empNumber'] . "' >" . $emp['empName'] . "</option>";
+                }
+                ?>
+            </select>
 
-        <div class=" div2">
-            <!-- <h3>Department Admin Page</h3> -->
-            <!-- <a href='index.php'><button>Back</button></a> -->
-
-            <!-- <div class="body"> -->
-            <div>
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>Dep Number</th>
-                            <th>Dep Name</th>
-                            <th>Dep Head</th>
-                            <th>DH Change</th>
-                            <th>Dep Asst </th>
-                            <th>DA Change</th>
-                            <th>Dep Asset Mgr</th>
-                            <th>AM Change</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
-                        foreach ($deps as $dep) {
-                            echo "<tr>";
-                            echo "<td>" . $dep['dep_num'] . "</td>";
-                            echo "<td>" . $dep['dep_name'] . "</td>";
-                            echo "<td>" . $dep['dep_head_empName'] . "</td>";
-                            // echo "<td>" . $dep['dep_head_email'] . "</td>";
-                            echo "<td><button id='dh_data_button' value='" . $dep['dep_num'] . "' onclick='showDHChange(this.value)'><i class=icon-arrow-left-circle m-auto text-primary'></i>Change</button>";
-                            echo "<td>" . $dep['dep_assist_empName'] . "</td>";
-                            // echo "<td>" . $dep['dep_assist_email'] . "</td>";
-                            echo "<td><button value='" . $dep['dep_num'] . "' onclick='showDAChange(this.value)'><i class=icon-arrow-left-circle m-auto text-primary'></i>Change</button>";
-                            echo "<td>" . $dep['dep_asset_mgr_empName'] . "</td>";
-                            // echo "<td>" . $dep['dep_asset_mgr_email'] . "</td>";
-                            echo "<td><button value='" . $dep['dep_num'] . "' onclick='showAMChange(this.value)'><i class=icon-arrow-left-circle m-auto text-primary'></i>Change</button>";
-                            echo "</tr>";
-                        };
-
-                        ?>
-
-                    </tbody>
-                </table>
-                <div class="dh_confirm hidden" id="dh_change">
-                    <h1 class="dh_h1">Change Assignment</h1>
-
-                    <label for="empList">Select the employee you wish to (re)assign to <mark>Department
-                            Head</mark></label>
-                    <select onchange='setDHValue(this.value)'>
-                        <?php
-                        foreach ($emps as $emp) {
-                            echo "<option value='" . $emp['empNumber'] . "' >" . $emp['empName'] . "</option>";
-                        }
-                        ?>
-                    </select>
-
-                    <div class="button-holder">
-                        <button type='button' class='dh_button' id="dh_1" onclick="changeDeptHead()">Assign</button>
-                        <button type='button' class='dh_button' id="hide" onclick="hideDHChange()">Cancel</button>
-                        <button type='button' class='dh_button' id="reset" onclick="setDHValueToNull()">Set to
-                            Blank</button>
-                    </div>
-                </div>
-                <div class="da_confirm hidden" id="da_change">
-                    <h1 class="da_h1">Change Assignment</h1>
-
-                    <label for="empList">Select the employee you wish to (re)assign to <mark>Department
-                            Assistant</mark></label>
-                    <select onchange='setDAValue(this.value)'>
-                        <?php
-                        foreach ($emps as $emp) {
-                            echo "<option value='" . $emp['empNumber'] . "'>" . $emp['empName'] . "</option>";
-                        }
-                        ?>
-                    </select>
-
-                    <div class="button-holder">
-                        <button type='button' class='da_button' id="da_1"
-                            onclick="changeDeptAssistant()">Assign</button>
-                        <button type='button' class='da_button' id="hide" onclick="hideDAChange()">Cancel</button>
-                        <button type='button' class='da_button' id="reset" onclick="setDAValueToNull()">Set to
-                            Blank</button>
-                    </div>
-                </div>
-                <div class="am_confirm hidden" id="am_change">
-                    <h1 class="am_h1">Change Assignment</h1>
-
-                    <label for="empList">Select the employee you wish to (re)assign to <mark>Department Asset
-                            Manager</mark></label>
-                    <select onchange='setAMValue(this.value)'>
-                        <?php
-                        foreach ($emps as $emp) {
-                            echo "<option value='" . $emp['empNumber'] . "'>" . $emp['empName'] . "</option>";
-                        }
-                        ?>
-                    </select>
-
-                    <div class="button-holder">
-                        <button type='button' class='am_button' id="am_1" onclick="changeDeptAssetMgr()">Assign</button>
-                        <button type='button' class='am_button' id="hide" onclick="hideAMChange()">Cancel</button>
-                        <button type='button' class='am_button' id="reset" onclick="setAMValueToNull()">Set to
-                            Blank</button>
-                    </div>
-                </div>
-                <div class="loading hidden" id="loading">
-                    <h1>Loading...</h1>
-                </div>
+            <div class="button-holder">
+                <button type='button' class='dh_button' id="dh_1" onclick="changeDeptHead()">Assign</button>
+                <button type='button' class='dh_button' id="hide" onclick="hideDHChange()">Cancel</button>
+                <button type='button' class='dh_button' id="reset" onclick="setDHValueToNull()">Set to
+                    Blank</button>
             </div>
         </div>
-        <div class="div3">
+        <div class="da_confirm hidden" id="da_change">
+            <h1 class="da_h1">Change Assignment</h1>
 
+            <label for="empList">Select the employee you wish to (re)assign to <mark>Department
+                    Assistant</mark></label>
+            <select onchange='setDAValue(this.value)'>
+                <?php
+                foreach ($emps as $emp) {
+                    echo "<option value='" . $emp['empNumber'] . "'>" . $emp['empName'] . "</option>";
+                }
+                ?>
+            </select>
+
+            <div class="button-holder">
+                <button type='button' class='da_button' id="da_1" onclick="changeDeptAssistant()">Assign</button>
+                <button type='button' class='da_button' id="hide" onclick="hideDAChange()">Cancel</button>
+                <button type='button' class='da_button' id="reset" onclick="setDAValueToNull()">Set to
+                    Blank</button>
+            </div>
         </div>
-        <div class="div4">
-            <?php include('hideTopNav.php') ?>
+        <div class="am_confirm hidden" id="am_change">
+            <h1 class="am_h1">Change Assignment</h1>
+
+            <label for="empList">Select the employee you wish to (re)assign to <mark>Department Asset
+                    Manager</mark></label>
+            <select onchange='setAMValue(this.value)'>
+                <?php
+                foreach ($emps as $emp) {
+                    echo "<option value='" . $emp['empNumber'] . "'>" . $emp['empName'] . "</option>";
+                }
+                ?>
+            </select>
+
+            <div class="button-holder">
+                <button type='button' class='am_button' id="am_1" onclick="changeDeptAssetMgr()">Assign</button>
+                <button type='button' class='am_button' id="hide" onclick="hideAMChange()">Cancel</button>
+                <button type='button' class='am_button' id="reset" onclick="setAMValueToNull()">Set to
+                    Blank</button>
+            </div>
+        </div>
+        <div class="loading hidden" id="loading">
+            <h1>Loading...</h1>
         </div>
     </div>
-
+</div>
 </body>
 
 </html>
+<script>
+    function displayAlert() {
+
+        var html = '';
+        html +=
+            `<div class="info-banner">
+            You can not control others, only how you react to them.</p>
+        </div>`
+        document.getElementById('alert-banner').innerHTML = html
+    }
+    displayAlert();
+</script>
 <style>
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-    }
-
-    * {
-        margin: 0;
-    }
-
-    html {
-        height: 100%;
-    }
-
-    body {
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    img,
-    picture,
-    video,
-    canvas,
-    svg {
-        display: block;
-        max-width: 100%;
-    }
-
-    input,
-    button,
-    textarea,
-    select {
-        font: inherit;
-    }
-
-    p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        overflow-wrap: break-word;
-    }
-
-    #root,
-    #__next {
-        isolation: isolate;
+    .info-banner {
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .parent {
         display: grid;
-        grid-template-columns: 10% 25% 38% 25%;
+        grid-template-columns: 10% 90%;
         grid-template-rows: 75px 1fr 1fr;
         height: 100vh;
-        /* overflow: hidden; */
+
     }
 
     .div1 {
         display: flex;
-        grid-area: 1 / 1 / 3 / 1;
+        grid-area: 1 / 1 / 4 / 1;
 
     }
 
     .div2 {
-        display: flex;
-        grid-area: 2 / 2 / 2 / 2;
-        /* height: 100vh; */
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-area: 2 / 2 / 5 / 5;
         scrollbar-gutter: stable;
-        background-color: #80808030;
+        background-image:
+            conic-gradient(from 127deg at 0% 100%,
+                #00d5ff 47% 47%, #aa92ff 101% 101%);
     }
 
     .div3 {
-        display: flex;
+        display: none;
         grid-area: 2 / 3 / 2 / 3;
         height: 100vh;
         scrollbar-gutter: stable;
         padding-left: 20px;
         overflow-y: auto;
-        border-top: none !important;
-        border-left: none !important;
-        border-bottom: none !important;
+        border-top: 3px solid #80808050;
+        border-left: 3px solid #80808050;
+        border-bottom: 3px solid #80808050;
 
     }
 
@@ -411,14 +387,13 @@ if ($eRes->num_rows > 0) {
 
     .div5 {
         display: flex;
-        /* grid-area: 2/ 4 / 2 /4; */
         overflow-y: auto;
         scrollbar-gutter: stable;
     }
 
 
     .div6 {
-        display: flex;
+        display: none;
         flex-direction: column;
         grid-area: 2 / 4 / 3 / 4;
         border-top: 3px solid #80808050;
@@ -431,7 +406,7 @@ if ($eRes->num_rows > 0) {
     }
 
     .div7 {
-        display: flex;
+        display: none;
         grid-area: 1 / 5 / 1 / 5;
         margin-left: -100px;
         /* visibility: hidden; */
@@ -871,16 +846,14 @@ if ($eRes->num_rows > 0) {
         }
     }
 
-    body {
+    /* body {
         margin: 0px;
         padding: 40px;
-        /* color: whitesmoke; */
-        /* background-color: #0d0e0e; */
-        /* background-image: linear-gradient(0deg, #0d0e0e 27%, #5e5e6a 100%); */
+        
         background-size: cover;
         background-position: center center;
         background-attachment: fixed;
-    }
+    } */
 
     button {
         font-size: smaller;

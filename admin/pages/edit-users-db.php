@@ -1,8 +1,12 @@
 <?php
-
+// Created: 2025/02/07 12:17:40
+// Last modified: 2025/02/28 10:33:05
+// include_once(dirname(__FILE__) . '../../classes/User.php');
 require_once 'config.php';
 $conn = new mysqli($host, $user, $password, $dbname, $port, $socket)
     or die('Could not connect to the database server' . mysqli_connect_error());
+// $users = User::getUsers();
+// echo json_encode($users);
 
 // check for logged in. If yes send to dashboard
 if (session_status() !== PHP_SESSION_ACTIVE) {

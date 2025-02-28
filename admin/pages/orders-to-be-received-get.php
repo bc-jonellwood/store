@@ -15,11 +15,13 @@ $data = [];
 //         from uniform_orders.ord_ordered od
 //         JOIN departments d on d.dep_num = od.department";
 
-$sql = "SELECT dep_name, order_details_id, rf_first_name, rf_last_name, created, grand_total, line_item_total, 
-quantity, color_id, size_name, product_code, product_name, logo, dept_patch_place, order_id, order_details_id
-FROM uniform_orders.ord_ref
-WHERE status = 'Ordered'
-OR status = 'Waiting on Customer'";
+$sql = "SELECT ord.dep_name, ord.order_details_id, ord.rf_first_name, ord.rf_last_name, ord.created, ord.grand_total, ord.line_item_total, 
+ord.quantity, ord.size_name, ord.product_code, ord.product_name, ord.logo, ord.dept_patch_place, ord.order_id, ord.order_details_id,
+c.color as color_id
+FROM uniform_orders.ord_ref ord
+JOIN colors c on c.color_id = ord.color_id
+WHERE ord.status = 'Ordered'
+OR ord.status = 'Waiting on Customer'";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();

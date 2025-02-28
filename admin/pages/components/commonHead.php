@@ -100,6 +100,14 @@
                             </a>
                         </li>
                         <li class='nav-item'>
+                            <a class='nav-link' href='./departmentSummaryReport.php'>
+                                <span class='nav-link-text ms-1'>
+                                    <img class='icon' src='../../assets/icons/deptsummary.svg' width='20' height='20'>
+                                    Dept Summary
+                                </span>
+                            </a>
+                        </li>
+                        <li class='nav-item'>
                             <a class='nav-link' href='orders-to-be-received.php'>
                                 <span class='nav-link-text ms-1'>
                                     <img class='icon' src='../../assets/icons/delivery.svg' width='20' height='20'>

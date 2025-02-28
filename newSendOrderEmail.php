@@ -57,7 +57,7 @@ $db_fyend = date(DATE_RFC3339, $fyend);
 $data = array();
 
 $orderIDList = [];
-$sql = "SELECT order_details_id FROM ord_ref WHERE order_id = $ord_id";
+$sql = "SELECT order_details_id FROM order_details WHERE order_id = $ord_id";
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -72,15 +72,24 @@ $ordArray = array();
 foreach ($orderIDList as $key => $value) {
     $ord_id = $value['order_details_id'];
     //     // Get order details
-    $ordSql = "SELECT ord.order_id, ord.customer_id, ord.created, ord.grand_total, ord.product_id, ord.quantity, ord.status, 
-    ord.size_id, ord.color_name, ord.order_details_id, ord.line_item_total, ord.logo, ord.dept_patch_place, ord.comment, 
-    ord.product_price, ord.logo_fee, ord.product_code, 
-    CONCAT(c.first_name, ' ', c.last_name) as submitted_for, c.email as submitted_for_email, c.emp_id, 
-    c.department, s.empName as submitted_by, s.email as submitted_by_email, d.dep_name, p.name, p.image, si.size_name as size_name 
-    FROM ord_ref as ord 
-    LEFT JOIN customers as c ON c.customer_id = ord.customer_id 
-    LEFT JOIN curr_emp_ref as s on s.empNumber = ord.submitted_by 
+    $ordSql = "SELECT 	ord.order_id, ord.product_id, ord.quantity, ord.status, ord.size_id,
+		ord.order_details_id, ord.line_item_total, ord.logo, ord.dept_patch_place, ord.comment,
+        ord.item_price, ord.logo_fee, p.code, 
+		orders.customer_id, orders.created, orders.grand_total, 
+		colors.color as color_name,
+     
+		CONCAT(c.first_name, ' ', c.last_name) as submitted_for, c.email as submitted_for_email, 
+		c.emp_id, c.department, s.empName as submitted_by, 
+		s.email as submitted_by_email, 
+		d.dep_name, 
+		p.name, p.image, p.code as product_code,
+		si.size_name as size_name 
+    FROM order_details as ord
+    JOIN orders on orders.order_id = ord.order_id
+    LEFT JOIN customers as c ON c.customer_id = orders.customer_id 
+    LEFT JOIN curr_emp_ref as s on s.empNumber = orders.submitted_by 
     LEFT JOIN departments d on d.dep_num = s.deptNumber 
+    LEFT JOIN colors on colors.color_id = ord.color_id
     JOIN sizes_new as si on si.size_id = ord.size_id 
     JOIN products_new as p ON p.product_id = ord.product_id 
     WHERE ord.order_details_id=$ord_id
@@ -181,7 +190,7 @@ try {
             <td align='center' style='padding:0;'>
                 <table role='presentation' style='width:700px;border-collapse:collapse;border:1px solid #cccccc;border-spacing:0;text-align:left;'>
                 <tr>
-                    <td align='center' style='padding:40px 0 30px 0;background:#70bbd9;'>
+                    <td align='center' style='padding:40px 0 30px 0;background:#001f2b;'>
                     <img src=\"cid:logo_p2t\" alt='County Logo' width='300' style='height:auto;display:block;' />
                     </td>
                 </tr>
@@ -191,7 +200,7 @@ try {
                         <tr>
                         <td style='padding:0 0 36px 0;color:#153643;'>
                             <h1 style='font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;'>Request Details for " . $submitted_for . " </h1> 
-                            <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;color:#f57f43'>Request Confirmation #: " . $order_id . "</p>                                
+                            <p style='margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;color:e87758'>Request Confirmation #: " . $order_id . "</p>                                
                         </td>
                         </tr>";
     $orderCounter = 0;
@@ -202,6 +211,7 @@ try {
         // echo $proImage; 
         $logoImage = $order['logo'];
 
+        // Black / Gold
 
         // from php mail documentation proper syntax is $mail->AddEmbeddedImage(filename, cid, name);
         // therefore the $proImage variable that updates each time through the look should update the cid ??
@@ -213,11 +223,12 @@ try {
                     <td style='padding:0;'>
                         <table role='presentation' style='width:100%;border-collapse:collapse;border:0;border-spacing:0;margin-top:10px'>
                         <tr>
-                            <td style='width:260px;padding:0;vertical-align:top;color:#f57f43;'>
+                            <td style='width:260px;padding:0;vertical-align:top;color:e87758;'>
                                 <p style='margin:0 0 25px 0;font-size:14px;line-height:14px;font-family:Arial,sans-serif;'><img src='cid:logo_p2t" . $orderCounter . "' alt='" . $order['name'] . "' width='155' style='height:auto;display:block;' /></p>
                                 
                             </td>
-                            <td style='width:260px;padding-left:20px;vertical-align:top;color:#153643;'>        
+                            <td style='width:260px;padding-left:20px;vertical-align:top;color:#153643;'>   
+                                
                                 <span style='margin:0 0 12px 0;font-size:14px;line-height:14px;font-family:Arial,sans-serif;'><b>Product Name:</b></span>
                                     <span style='font-size:14px;line-height:14px'>" . $order['name'] . "</span><br>
                                 <span style='margin:0 0 12px 0;font-size:14px;line-height:14px;font-family:Arial,sans-serif;'><b>Size:</b></span>
@@ -251,6 +262,7 @@ try {
                         </table>
                     </td>
                     </tr>
+                    
                     ";
         unset($proImage);
     }

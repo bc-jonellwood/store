@@ -12,6 +12,7 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
     header("Location: 401.php");
     exit;
 }
+include "components/commonHead.php";
 
 ?>
 
@@ -27,8 +28,8 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
             await fetch('./orders-to-be-received-get.php')
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log(data);
-                    console.log(data.length, 'total orders');
+                    // console.log(data);
+                    // console.log(data.length, 'total orders');
                     const groupedByDepartment = data.reduce((acc, entry) => {
                         const departmentNumber = entry.dep_name;
                         if (!acc[departmentNumber]) {
@@ -45,6 +46,7 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
 
                     Object.keys(groupedByDepartment).forEach(departmentNumber => {
                         var table = document.createElement('table');
+                        table.classList.add('styled-table')
                         table.innerHTML = `
                             <caption>${departmentNumber}</caption>
                             
@@ -74,13 +76,17 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
                             const firstEntry = groupedByOrderId[orderId][0];
 
                             if (firstEntry) {
-                                const tr = document.createElement('caption');
+                                const tr = document.createElement('tr');
                                 tr.classList.add('orderIDCaption')
                                 tr.innerHTML = `
-                                    
+                                    <td colspan='4'>
                                     Order #: ${firstEntry.order_id} for ${firstEntry.rf_first_name} ${firstEntry.rf_last_name} for total of ${new Intl.NumberFormat('us-EN', { style: 'currency', currency: 'USD' }).format(firstEntry.grand_total)}
-                                    <button class='btn rec-btn'>Receive Entire Order</button>
-                                    
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan='2'>
+                                    <button popovertarget="whole-order-confirm" popovertargetaction="show" onclick="createWholeOrderPopoverContent(${orderId})">Receive Entire Order</button>
+                                    <td>
                                 `;
                                 orderTable.appendChild(tr);
 
@@ -110,7 +116,15 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
                                     <td width=10%>${entry.color_id}</td>
                                     <td width=10%><img src='../../${entry.logo}' alt='logo' /></td>
                                     <td width=10%>${entry.dept_patch_place}</td>
-                                    <td><button class='btn'>Receive Item</button></td>
+                                    <td>
+                                        <button 
+                                            popovertarget = "single-item-confirm"
+                                            popovertargetaction = "show";
+                                            onclick = createPopoverContent(${entry.order_details_id})
+                                            >
+                                               Receive Item (# ${entry.order_details_id})
+                                        </button>
+                                    </td>
                                 </tr>
                                 `).join('')}
                         `;
@@ -128,146 +142,169 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
 
 </head>
 
-<body class="p-3 m-0 border-0 bd-example m-0 border-0">
-    <div class="parent">
-        <div class="div1">
-            <?php include('hideNav.php'); ?>
-        </div>
-        <div class="main-list-holder">
+<!-- <body class="p-3 m-0 border-0 bd-example m-0 border-0"> -->
+<!-- <div class="parent"> -->
+<!-- <div class="div1"> -->
+<!-- </?php include('hideNav.php'); ?> -->
+<!-- </div> -->
+<div class="main-list-holder">
 
-            <div class="div2" id="main">
-                <p>Div 2</p>
-            </div>
-        </div>
-        <!-- <div class="div3">
+    <div class="div2">
+        <div id="main">Div 2</div>
+    </div>
+</div>
+<!-- <div class="div3">
             <p>Div 3</p>
         </div> -->
-        <div class="div4">
-            <?php include('hideTopNav.php'); ?>
-        </div>
-        <div class="div6 total-hidden open" id="totalsOffCanvas">
-            <div class="div5" id="depTotals">Div 5 inside of Div 6</div>
-        </div>
-        <div class="div7 hidden" id="showTotalsButton">
-            <button class="seeTotals" id="seeTotals">Dont press me</button>
-        </div>
-    </div>
-    <button id="showButton">Show</button>
+<!-- <div class="div4">
+    </?php include('hideTopNav.php'); ?>
+</div> -->
+<div class="div6 total-hidden open" id="totalsOffCanvas">
+    <div class="div5" id="depTotals">Div 5 inside of Div 6</div>
+</div>
+<div class="div7 hidden" id="showTotalsButton">
+    <button class="seeTotals" id="seeTotals">Dont press me</button>
+</div>
+</div>
+<button id="showButton">Show</button>
 
-    <div id="not-off-canvas" popover=manual>
-        <button class="close-btn" popovertarget="not-off-canvas" popovertargetaction="hide">
-            <span aria-hidden=”true”>❌</span>
-            <span class="sr-only">Close</span>
-        </button>
-        <div class="request-action-options">
-            <div class="action-buttons" id="action-buttons">
-            </div>
+<div id="not-off-canvas" popover=manual>
+    <button class="close-btn" popovertarget="not-off-canvas" popovertargetaction="hide">
+        <span aria-hidden=”true”>❌</span>
+        <span class="sr-only">Close</span>
+    </button>
+    <div class="request-action-options">
+        <div class="action-buttons" id="action-buttons">
         </div>
     </div>
+</div>
 
-    <div id="action-jackson" popover=manual>
-        <h1>ACTION JACKSON!!!!</h1>
-    </div>
+<div id="action-jackson" popover=manual>
+    <h1>ACTION JACKSON!!!!</h1>
+</div>
 
-    <div id="whole-order-confirm" popover=manual>
-        <button class="close-btn" popovertarget="whole-order-confirm" popovertargetaction="hide">
-            <span aria-hidden=”true”>❌</span>
-            <span class="sr-only">Close</span>
-        </button>
-        <span id="confirm-details-holder">
-            <br>
-            <p id="popover-values"></p>
-        </span>
-    </div>
-    <div id="whole-order-deny-confirm" popover=manual>
-        <button class="close-btn" popovertarget="whole-order-deny-confirm" popovertargetaction="hide">
-            <span aria-hidden=”true”>❌</span>
-            <span class="sr-only">Close</span>
-        </button>
-        <span id="confirm-details-holder">
-            <br>
-            <p id="popover-values"></p>
-        </span>
-    </div>
+<div id="whole-order-confirm" popover=manual>
+    <button class="close-btn" popovertarget="whole-order-confirm" popovertargetaction="hide">
+        <span aria-hidden=”true”>❌</span>
+        <span class="sr-only">Close</span>
+    </button>
+    <span id="confirm-details-holder">
+        <br>
+        <p id="whole-order-popover-values"></p>
+    </span>
+</div>
+<div id="single-item-confirm" popover=manual>
+    <button popovertarget="single-item-confirm" popovertargetaction="hide">
+        <span aria-hidden=”true”>❌</span>
+        <span class="sr-only">Cancel</span>
+    </button>
+    <span id="confirm-details-holder">
+        <br>
+        <p id="single-item-popover-values">
+
+        </p>
+    </span>
+</div>
+<!-- <div id="whole-order-deny-confirm" popover=manual>
+    <button class="close-btn" popovertarget="whole-order-deny-confirm" popovertargetaction="hide">
+        <span aria-hidden=”true”>❌</span>
+        <span class="sr-only">Close</span>
+    </button>
+    <span id="confirm-details-holder">
+        <br>
+        <p id="popover-values"></p>
+    </span>
+</div> -->
 </body>
 
 </html>
+<script>
+    function displayAlert() {
+
+        var html = '';
+        html +=
+            `<div class="info-banner">
+            It's gonna be a lovely day.</p>
+        </div>`
+        document.getElementById('alert-banner').innerHTML = html
+    }
+    displayAlert();
+
+    async function receiveItem(orderDetailsId) {
+        await fetch('./API/receiveSingleItemAdmin.php?id=' + orderDetailsId)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data.success) {
+                    window.location.replace('orders-to-be-received.php');
+                }
+            })
+    }
+    async function receiveWholeOrder(orderId) {
+        await fetch('./API/receiveWholeOrderAdmin.php?id=' + orderId)
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data);
+                if (data.success) {
+                    window.location.replace('orders-to-be-received.php');
+                }
+            })
+    }
+
+    function createPopoverContent(id) {
+        // console.log("ID:", id);
+        var html = ''
+        html += '<hr><div><p>Are you sure you want to receive this item?</p>'
+        html += '<button onclick="receiveItem(\'' + id +
+            '\')" popovertarget="single-item-confirm" popovertargetaction="hide">Yes</button></div>'
+        // console.log("Generated HTML:", html);
+
+        document.getElementById('single-item-popover-values').innerHTML = html;
+    }
+
+    function createWholeOrderPopoverContent(id) {
+        // console.log("ID:", id);
+        var html = ''
+        html += '<hr><div><p>Are you sure you want to receive all items in this order?</p>'
+        html += '<button onclick="receiveWholeOrder(\'' + id +
+            '\')" popovertarget="whole-order-confirm" popovertargetaction="hide">Yes</button></div>'
+        // console.log("Generated HTML:", html);
+
+        document.getElementById('whole-order-popover-values').innerHTML = html;
+    }
+</script>
 <style>
-    *,
-    *::before,
-    *::after {
-        box-sizing: border-box;
-    }
-
-    * {
-        margin: 0;
-    }
-
-    html {
-        height: 100%;
-    }
-
-    body {
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    img,
-    picture,
-    video,
-    canvas,
-    svg {
-        display: block;
-        max-width: 100%;
-    }
-
-    input,
-    button,
-    textarea,
-    select {
-        font: inherit;
-    }
-
-    p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        overflow-wrap: break-word;
-    }
-
-    #root,
-    #__next {
-        isolation: isolate;
+    .info-banner {
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .parent {
         display: grid;
-        grid-template-columns: 10% 88% 0% 0%;
+        grid-template-columns: 10% 90%;
         grid-template-rows: 75px 1fr 1fr;
         height: 100vh;
-        /* overflow: hidden; */
+
     }
 
     .div1 {
         display: flex;
-        grid-area: 1 / 1 / 3 / 1;
+        grid-area: 1 / 1 / 4 / 1;
 
     }
 
     .div2 {
-        display: flex;
-        flex-direction: column;
-        grid-area: 2 / 2 / 2 / 2;
-        /* height: 100vh; */
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-area: 2 / 2 / 5 / 5;
         scrollbar-gutter: stable;
-        background-color: #80808030;
+        background-image:
+            conic-gradient(from 127deg at 0% 100%,
+                #00d5ff 47% 47%, #aa92ff 101% 101%);
     }
 
     .div3 {
-        display: flex;
+        display: none;
         grid-area: 2 / 3 / 2 / 3;
         height: 100vh;
         scrollbar-gutter: stable;
@@ -278,6 +315,28 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
         border-bottom: 3px solid #80808050;
 
     }
+
+    /* .div2 {
+        display: flex;
+        flex-direction: column;
+        grid-area: 2 / 2 / 2 / 2;
+        
+        scrollbar-gutter: stable;
+        background-color: #80808030;
+    } */
+
+    /* .div3 {
+        display: flex;
+        grid-area: 2 / 3 / 2 / 3;
+        height: 100vh;
+        scrollbar-gutter: stable;
+        padding-left: 20px;
+        overflow-y: auto;
+        border-top: 3px solid #80808050;
+        border-left: 3px solid #80808050;
+        border-bottom: 3px solid #80808050;
+
+    } */
 
     .div4 {
         display: flex;
@@ -364,11 +423,14 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
     .styled-table {
         border-collapse: collapse;
         margin: 25px 0;
-        font-size: 0.8em;
-        /* font-family: sans-serif; */
-        font-family: robofont;
+        /* font-size: 0.8em; */
+
+        /* font-family: robofont; */
         min-width: 400px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        background-color: antiquewhite;
+        margin-bottom: 20px;
+        border-bottom: 5px solid #80808050;
     }
 
     .styled-table thead tr {
@@ -711,6 +773,7 @@ if (!isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
         text-transform: capitalize;
         padding-left: 15px;
         font-size: large;
+
     }
 
     .details-row {
