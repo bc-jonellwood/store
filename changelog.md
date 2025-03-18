@@ -1,5 +1,11 @@
 # County Store Application Changelog
 
+## Version 2.0.8 - (2025-03-18)
+
+### **Other Changes &#129489;&#8205;&#128187;**
+
+- Added comments from both comment sources to the Vendor Report for additional clarity in what the user is requesting.
+
 ## Version 2.0.7 - (2025-02-28)
 
 ### **Admin Updates**
