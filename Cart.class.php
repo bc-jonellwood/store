@@ -11,6 +11,9 @@ Includes:   none
 if (!session_id()) {
     session_start();
 }
+
+define('CURRENCY', 'USD');
+define('CURRENCY_SYMBOL', '$');
 class Cart
 {
     protected $cart_contents = array();

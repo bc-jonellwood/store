@@ -8,7 +8,7 @@
 // $accessRequired = Page::getAccessRequired($pageId);
 // // echo "<!-- Access Required: $accessRequired -->";
 // AccessControl::enforce($accessRequired);
-$logFile = 'error_log.txt';
+$logFile = '../tmp/error_log.txt';
 
 // Check if the file exists
 if (!file_exists($logFile)) {

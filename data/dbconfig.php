@@ -1,9 +1,8 @@
 <?php
 
-class dbConfig
-{
-    public $serverName = "10.50.10.94";
-    public $database = "uniform_orders";
-    public $uid = "EmpOrderForm";
-    public $pwd = "FwpIXaIf1jGCpjS5Banp";
-}
+$host = "10.50.10.94";
+$port = 3306;
+$socket = "";
+$user = "EmpOrderForm";
+$password = "FwpIXaIf1jGCpjS5Banp";
+$dbname = "uniform_orders";

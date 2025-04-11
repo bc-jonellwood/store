@@ -5,8 +5,8 @@
 	"workbench.colorCustomizations": {
 		"titleBar.activeForeground": "#E2BC99",
 		"titleBar.inactiveForeground": "#000000cc",
-		"titleBar.activeBackground": "#0073cf",
+		"titleBar.activeBackground": "#EA4335",
 		"titleBar.inactiveBackground": "#000"
 	},
-	"cSpell.words": ["dbconfig"]
+	"cSpell.words": ["dbconfig", "producttypes"]
 }

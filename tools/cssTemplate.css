@@ -1,0 +1,71 @@
+/* This is just an example of CSS for just this page content.
+ */
+/* Main content container These override the existing .content css primary css file*/
+
+.$pageName-page{
+
+	.content {
+		padding: 20px !important;
+	}
+
+	/* Headings */
+	h1 {
+		color: #2c3e50;
+		margin-bottom: 1.5rem;
+		font-weight: 600;
+		border-bottom: 2px solid #f0f0f0;
+		padding-bottom: 0.5rem;
+	}
+
+	h3 {
+		color: #3498db;
+		margin-bottom: 0.5rem;
+		font-weight: 500;
+	}
+
+	/* Paragraphs */
+	p {
+		margin-bottom: 1.5rem;
+		color: #555;
+	}
+
+	/* Team members section */
+	.team-members {
+		margin-top: 2.5rem;
+	}
+
+	.team-members h1 {
+		font-size: 1.75rem;
+	}
+
+	.team-member {
+		background-color: #f8f9fa;
+		border-left: 4px solid #3498db;
+		padding: 1rem;
+		margin-bottom: 1rem;
+		border-radius: 0 4px 4px 0;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+	}
+
+	.team-member:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.team-member p {
+		margin-bottom: 0;
+		color: #777;
+		font-size: 0.9rem;
+	}
+
+	/* Responsive adjustments */
+	@media (max-width: 600px) {
+		.content {
+			padding: 1.5rem;
+		}
+
+		h1 {
+			font-size: 1.5rem;
+		}
+}
+}

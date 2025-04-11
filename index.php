@@ -1,7 +1,7 @@
 <?php
 /*
 Created: 2024/08/28 14:24:35
-Last modified: 2024/09/27 08:41:49
+Last modified: 2025/04/09 12:19:44
 Organization: Berkeley County IT Department
 Purpose: Entry point for County Store Application. 
 Includes:   Cart.class.php is to initialize a Cart Object for users shopping session.
@@ -13,6 +13,7 @@ Includes:   Cart.class.php is to initialize a Cart Object for users shopping ses
 */
 
 require_once "config.php";
+// require_once "/data/dbconfig.php";
 
 $conn = new mysqli($host, $user, $password, $dbname, $port, $socket)
     or die('Could not connect to the database server' . mysqli_connect_error());

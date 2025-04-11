@@ -9,10 +9,10 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
     exit;
 }
-if (isset($_SESSION["role_id"]) && $_SESSION["role_id"] !== 1) {
-    header("Location: 401.php");
-    exit;
-}
+// if (isset($_SESSION["empNumber"]) && $_SESSION["empNumber"] !== '8565') {
+//     header("Location: 401.php");
+//     exit;
+// }
 
 ?>
 <!DOCTYPE html>
