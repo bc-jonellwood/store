@@ -495,7 +495,7 @@ include "components/commonHead.php";
         var html = '';
         html +=
             `<div class="info-banner">
-        🚨 All requests must be submitted by May 31st, ${fyData[0]}. Requests will not be able to be submitted between June 1st and June 30th, ${fyData[1]}</div>`
+        🚨 All requests must be submitted by May 31st, 20${fyData[1]}. Requests will not be able to be submitted between June 1st and June 30th, 20${fyData[1]}</div>`
         document.getElementById('alert-banner').innerHTML = html
     }
     // function displayAlert() {
